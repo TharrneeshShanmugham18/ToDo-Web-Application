@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Momentum — Todo Task Manager</title>
+  <!-- Load primary and fallback stylesheet paths -->
+  <link rel="stylesheet" href="/static/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+  <!-- Decorative Background Glows -->
+  <div class="ambient-glow glow-1" aria-hidden="true"></div>
+  <div class="ambient-glow glow-2" aria-hidden="true"></div>
+
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="brand">
+        <div class="brand-logo" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <span class="brand-name">Momentum</span>
+          <span class="brand-tagline">Small steps. Big progress.</span>
+        </div>
+      </div>
+      <div class="header-actions">
+        <a href="/docs" target="_blank" class="docs-link" title="Open API Documentation">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+          </svg>
+          API Docs
+        </a>
+      </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+      <h1 class="hero-title">Small steps. <span class="gradient-text">Big progress.</span></h1>
+      <p class="hero-subtitle">Focus on what matters most, complete one task at a time, and build unstoppable momentum.</p>
+    </section>
+
+    <!-- Statistics Dashboard Grid -->
+    <section class="stats-section" aria-label="Task statistics">
+      <div class="stat-card card-total">
+        <div class="stat-icon icon-total" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="7" rx="1.5"></rect>
+            <rect x="14" y="3" width="7" height="7" rx="1.5"></rect>
+            <rect x="14" y="14" width="7" height="7" rx="1.5"></rect>
+            <rect x="3" y="14" width="7" height="7" rx="1.5"></rect>
+          </svg>
+        </div>
+        <div class="stat-details">
+          <span class="stat-label">Total Tasks</span>
+          <span class="stat-number" id="count-total">0</span>
+        </div>
+      </div>
+
+      <div class="stat-card card-pending">
+        <div class="stat-icon icon-pending" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+        </div>
+        <div class="stat-details">
+          <span class="stat-label">Pending</span>
+          <span class="stat-number" id="count-pending">0</span>
+        </div>
+      </div>
+
+      <div class="stat-card card-completed">
+        <div class="stat-icon icon-completed" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+          </svg>
+        </div>
+        <div class="stat-details">
+          <span class="stat-label">Completed</span>
+          <span class="stat-number" id="count-completed">0</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Add Task Card -->
+    <section class="task-card-container add-task-card">
+      <h2 class="section-title">Add a New Task</h2>
+      <form id="add-task-form" class="add-task-form" onsubmit="return false;" novalidate>
+        <div class="input-container">
+          <label for="task-title-input" class="visually-hidden">Task title</label>
+          <input
+            type="text"
+            id="task-title-input"
+            class="task-input"
+            placeholder="What would you like to accomplish?"
+            maxlength="200"
+            autocomplete="off"
+            required
+          />
+          <span id="char-counter" class="char-counter" aria-live="polite">0/200</span>
+        </div>
+        <button type="submit" id="add-task-btn" class="btn btn-primary" aria-label="Add Task">
+          <svg class="btn-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          <span class="btn-text">Add Task</span>
+        </button>
+      </form>
+      <div id="form-error" class="form-error" role="alert" style="display: none;"></div>
+    </section>
+
+    <!-- Task List & Filters Section -->
+    <main class="task-card-container list-card">
+      <!-- Filter Bar -->
+      <div class="filter-header">
+        <div class="filter-controls" role="tablist" aria-label="Filter tasks">
+          <button
+            type="button"
+            class="filter-pill active"
+            role="tab"
+            aria-selected="true"
+            data-filter="all"
+            id="filter-all"
+          >
+            All <span class="badge-count" id="badge-all">0</span>
+          </button>
+          <button
+            type="button"
+            class="filter-pill"
+            role="tab"
+            aria-selected="false"
+            data-filter="pending"
+            id="filter-pending"
+          >
+            Pending <span class="badge-count" id="badge-pending">0</span>
+          </button>
+          <button
+            type="button"
+            class="filter-pill"
+            role="tab"
+            aria-selected="false"
+            data-filter="completed"
+            id="filter-completed"
+          >
+            Completed <span class="badge-count" id="badge-completed">0</span>
+          </button>
+        </div>
+        <span class="active-filter-label" id="status-summary" aria-live="polite">Showing all tasks</span>
+      </div>
+
+      <!-- Task List Content Area -->
+      <div class="task-content-area">
+        <!-- Loading State -->
+        <div id="loading-state" class="state-view loading-view" style="display: none;">
+          <div class="spinner" aria-label="Loading tasks"></div>
+          <p>Loading your tasks...</p>
+        </div>
+
+        <!-- Error State with Retry -->
+        <div id="error-state" class="state-view error-view" style="display: none;">
+          <div class="state-icon-circle error-circle">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+          </div>
+          <h3>Failed to load tasks</h3>
+          <p id="error-message">Could not connect to the backend server.</p>
+          <button type="button" id="retry-btn" class="btn btn-secondary">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="1 4 1 10 7 10"></polyline>
+              <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+            </svg>
+            Try Again
+          </button>
+        </div>
+
+        <!-- Global Empty State (0 tasks exist) -->
+        <div id="empty-state-global" class="state-view empty-view" style="display: none;">
+          <div class="state-icon-circle empty-circle">
+            <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="1.8">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+              <polyline points="10 9 9 9 8 9"></polyline>
+            </svg>
+          </div>
+          <h3>No tasks yet</h3>
+          <p>You have a clean slate! Add your first task above to start building momentum.</p>
+        </div>
+
+        <!-- Filtered Empty State (No matching tasks in filter) -->
+        <div id="empty-state-filter" class="state-view empty-view" style="display: none;">
+          <div class="state-icon-circle empty-circle">
+            <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="1.8">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+          </div>
+          <h3 id="empty-filter-title">No tasks found</h3>
+          <p id="empty-filter-desc">There are no tasks matching this filter.</p>
+        </div>
+
+        <!-- Active Tasks List -->
+        <ul id="task-list" class="task-items-list" aria-live="polite"></ul>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <p>Built with FastAPI & SQLite • Enforcing status rule: <code>pending &rarr; completed</code></p>
+    </footer>
+  </div>
+
+  <script src="/static/script.js"></script>
+</body>
+</html>
